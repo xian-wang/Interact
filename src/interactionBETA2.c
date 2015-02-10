@@ -201,7 +201,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     }
 }
 
-static void app_message_init(void) {
+static void appMessageInit(void) {
     // Reduce the sniff interval for more responsive messaging at the expense of
     // increased energy consumption by the Bluetooth module
     // The sniff interval will be restored by the system after the app has been
@@ -209,31 +209,32 @@ static void app_message_init(void) {
     app_comm_set_sniff_interval(SNIFF_INTERVAL_REDUCED);
     // Register message handlers
     app_message_register_inbox_received(in_received_handler);
-    // Init buffers
-    app_message_open(64, 16);
+    // Init buffers    
+    app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
 }
 
 static bool checkConnection(){
     DictionaryIterator *iter;
+    bool flag = true;
     AppMessageResult r = app_message_outbox_begin(&iter);
     if (r == APP_MSG_NOT_CONNECTED || r == APP_MSG_APP_NOT_RUNNING) {
-	return false;
+	flag = false;
     }
 
     if (dict_write_uint8(iter, KEY_TEST, 0) != DICT_OK) {
-	return false;
+	flag = false;
     }
     AppMessageResult r2 = app_message_outbox_send();
     if (r2 == APP_MSG_NOT_CONNECTED || r2 == APP_MSG_APP_NOT_RUNNING) {
-	return false;
+	flag = false;
     }
 
-    return true;
+    return flag;
 }
 
 static void init() {  
-    app_message_init();
+    appMessageInit();
 
     if(! checkConnection()){//the phone is not connected or the app on the phone is not running
 	window_main = window_create();

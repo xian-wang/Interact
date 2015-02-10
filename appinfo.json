@@ -1,38 +1,42 @@
 {
-  "uuid": "39c263af-cde0-4ac1-be63-6940a9f4ffd4",
-  "shortName": "interactionBETA2",
-  "longName": "interactionBETA2",
-  "companyName": "GPDS",
-  "versionCode": 1,
-  "versionLabel": "1.0.0",
-  "watchapp": {
-    "watchface": false
-  },
-  "appKeys": {
-    "dummy": 0
-  },
-  "resources": {
-    "media": [
-      {
-        "type": "png",
-        "name": "IMAGE_ACTION_ICON_UNDO",
-        "file": "images/delete.png"
-      },
-      {
-        "type": "png",
-        "name": "IMAGE_ACTION_ICON_CANCEL",
-        "file": "images/cross2.png"
-      },
-      {
-        "type": "png",
-        "name": "IMAGE_ACTION_ICON_CHECK",
-        "file": "images/check2.png"
-      },
-      {
-        "type": "png",
-        "name": "IMAGE_ACTION_ICON_RESTART",
-        "file": "images/restart.png"
-      }
-    ]
-  }
+    "appKeys": {
+        "dummy": 0
+    },
+    "capabilities": [
+        ""
+    ],
+    "companyName": "GPDS",
+    "longName": "InteractPebble",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/restart.png",
+                "name": "IMAGE_ACTION_ICON_RESTART",
+                "type": "png"
+            },
+            {
+                "file": "images/check2.png",
+                "name": "IMAGE_ACTION_ICON_CHECK",
+                "type": "png"
+            },
+            {
+                "file": "images/cross2.png",
+                "name": "IMAGE_ACTION_ICON_CANCEL",
+                "type": "png"
+            },
+            {
+                "file": "images/delete.png",
+                "name": "IMAGE_ACTION_ICON_UNDO",
+                "type": "png"
+            }
+        ]
+    },
+    "shortName": "Interact",
+    "uuid": "39c263af-cde0-4ac1-be63-6940a9f4ffd4",
+    "versionCode": 1,
+    "versionLabel": "0.1",
+    "watchapp": {
+        "watchface": false
+    }
 }
