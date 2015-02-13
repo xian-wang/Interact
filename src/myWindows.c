@@ -19,11 +19,11 @@ MenuLayer *menu_user_list_layer;
 char user_list_items[MAX_NUM_USER_ITEMS][MAX_ITEM_USER_LENGTH];
 int user_item_count = 0;
 
-char main_menu[NUM_MAIN_MENU][MAX_ITEM_TEXT_LENGTH]={"Training", "Interaction", "Configuration"};
-char *connection_error_info = "Please connect to the phone and open the corresponding app";
-char *training_info = "Please follow the instructions on the phone to train";
-char *configuration_info = "Please follow the instructions on the phone to configure";
-char *data_logging_info_start = "Please turn the wrist to start";
+char main_menu[NUM_MAIN_MENU][MAX_ITEM_TEXT_LENGTH]={"Control", "Training", "Test"};
+char *connection_error_info = "Connect to the phone and open the corresponding app";
+char *training_info = "Follow the instructions on the phone to train";
+char *configuration_info = "Follow the instructions on the phone to configure";
+char *data_logging_info_start = "Turn the wrist to start";
 char *data_logging_info_restart = "FINISHED\n\nTurn wrist to restart";
 char *data_logging_info_waiting = "FINISHED\n\nWaiting for feedback...";
 char *data_logging_info_collecting = "Collecting data ...";
@@ -168,7 +168,23 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     const int index = cell_index->row;
 
     switch(index){
-	case 0: //the training item
+        case 0: 
+        //load data logging menu        
+        myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
+        window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
+        switchOnDLProc(REPEATED_DATALOGGING);
+        sendUint8(KEY_INTERACTION_MENU, 0);
+        
+        /*
+        //the user list item
+	    myLoadWindow(&window_user_list, window_user_list_load, window_user_list_unload);
+	    window_set_click_config_provider(window_user_list, click_config_provider_user_list);
+
+	    sendUint8(KEY_INTERACTION_MENU, 0);
+	    user_list_init();
+        */
+	    break;
+	case 1: //the training item
 	    APP_LOG(APP_LOG_LEVEL_DEBUG, "entering case 0");
 	    /*
 	       window_training = window_create();
@@ -197,13 +213,7 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 	    APP_LOG(APP_LOG_LEVEL_DEBUG, "leaving case 0");
 
 	    break;
-	case 1: //the user list item
-	    myLoadWindow(&window_user_list, window_user_list_load, window_user_list_unload);
-	    window_set_click_config_provider(window_user_list, click_config_provider_user_list);
-
-	    sendUint8(KEY_INTERACTION_MENU, 0);
-	    user_list_init();
-	    break;
+	
 
 	case 2: //the configuration item
 	    myLoadWindow(&window_configuration, window_configuration_load, window_configuration_unload);
@@ -262,13 +272,15 @@ void back_click_handler_training(ClickRecognizerRef recognizer, void *context) {
 
 //--------------- back click handler for data logging window ----------------------
 void back_click_handler_data_logging(ClickRecognizerRef recognizer, void *context) {
+    back_click_handler_to_main_menu(window_data_logging);
+    /*
     myPopWindow(window_data_logging);
     sendUint8(KEY_TRAINING_MENU, 0);
 
     //load training menu
     myLoadWindow(&window_training, window_training_load, window_training_unload);
     window_set_click_config_provider(window_training, click_config_provider_training);
-
+*/
     switchOffDLProc();
 }
 

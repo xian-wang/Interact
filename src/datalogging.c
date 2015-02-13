@@ -136,6 +136,7 @@ void accel_data_handler(AccelData *accel_data, uint32_t num_samples) {
 	}
 
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "oldest = %d, newest = %d", (int)oldest[0][0],(int)newest[0][0]);
+    // the update to the round robin queue is that num_samples of new buffered accel data replace num_samples of oldest data in this queue
 	double mean = myMean(lastMean, sum(*oldest,num_samples), sum(*newest,num_samples), QUEUE_LENGTH);
 	lastMean = mean;
 	double mean2 = myMean(lastMean2, sum(*(oldest+1),num_samples), sum(*(newest+1),num_samples), QUEUE_LENGTH);

@@ -130,15 +130,18 @@ void select_click_handler_feedback(ClickRecognizerRef recognizer, void *context)
 
 //--------------- back click handlers ----------------------
 void back_click_handler_continue(ClickRecognizerRef recognizer, void *context) {
-    back_click_handler_to_userlist(window_interaction_continue.window);
+    back_click_handler_to_main_menu(window_interaction_continue.window);
+    //back_click_handler_to_userlist(window_interaction_continue.window);
 }
 
 void back_click_handler_confirm(ClickRecognizerRef recognizer, void *context) {
-    back_click_handler_to_userlist(window_interaction_confirm.window);
+    back_click_handler_to_main_menu(window_interaction_confirm.window);
+    //back_click_handler_to_userlist(window_interaction_confirm.window);
 }
 
 void back_click_handler_feedback(ClickRecognizerRef recognizer, void *context) {
-    back_click_handler_to_userlist(window_interaction_feedback.window);
+    back_click_handler_to_main_menu(window_interaction_feedback.window);
+    //back_click_handler_to_userlist(window_interaction_feedback.window);
 }
 
 void config_provider_continue(void *ctx) {
@@ -285,7 +288,8 @@ void back_click_handler_to_userlist(Window *w){
 }
 //--------------- back click handler for interaction data logging window ----------------------
 void back_click_handler_interaction_data_logging(ClickRecognizerRef recognizer, void *context) {
-    back_click_handler_to_userlist(window_data_logging);
+    back_click_handler_to_main_menu(window_data_logging); // back to main menu directly
+   // back_click_handler_to_userlist(window_data_logging);
 }
 
 void click_config_provider_interaction_data_logging(void *ctx) {

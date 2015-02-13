@@ -3,10 +3,17 @@
 #include "datalogging.h"
 #include "compilerWindows.h"
 
+void showErrorMessageRemovingDL(char* info){ // disable data logging and load data logging window but just for showing text information
+    switchOffDLProc();
+	myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
+	window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
+	text_layer_set_text(data_logging_layer, info);
+	vibes_enqueue_custom_pattern(patError);
+}
+    
 void compilerMsgProc(int msg){
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "entering compilerMsgProc");
     switch(msg){
-	case ACCEPTED:
+	case ACCEPTED: // the gesture chain is accepted, load the confirm window
 	    switchOffDLProc();
 	    myLoadWindow(&(window_interaction_confirm.window), window_load_confirm, window_unload_confirm);
 	    text_layer_set_text(window_interaction_confirm.text_layer, "ACCEPTED");
@@ -33,6 +40,8 @@ void compilerMsgProc(int msg){
     }
 
 }
+
+// the handler to process all the received messages
 static void in_received_handler(DictionaryIterator *iter, void *context) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "received");
     Tuple *main_menu_tuple = dict_find(iter, KEY_MAIN_MENU);
@@ -50,16 +59,13 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     Tuple *command_ack_tuple= dict_find(iter, KEY_COMMAND_ACK);
     Tuple *connection_error_tuple= dict_find(iter, KEY_CONNECTION_ERROR);
     Tuple *motion_too_short_error_tuple= dict_find(iter, KEY_MOTION_TOO_SHORT_ERROR);
+    Tuple *user_related_error_tuple= dict_find(iter, KEY_USER_RELATED_ERROR);
 
     if (main_menu_tuple) {
-	//back to the main menu
-	//	    window_stack_pop_all(false);//pop all the previous windows
-	//window_stack_pop(true);
-
-	//in case that the previous window is data logging
-	switchOffDLProc();
-	popOtherThanMain();
-	myLoadWindow(&window_main, window_main_load, window_main_unload);
+    	//in case that the previous window is data logging
+    	switchOffDLProc();
+    	popOtherThanMain();
+    	myLoadWindow(&window_main, window_main_load, window_main_unload);
     }
 
     if (training_menu_tuple) {
@@ -75,10 +81,16 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     }
 
     if (control_menu_tuple) {
+        //load data logging menu        
+        myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
+        window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
+        switchOnDLProc(REPEATED_DATALOGGING);
+        /*
 	myLoadWindow(&window_user_list, window_user_list_load, window_user_list_unload);
 	window_set_click_config_provider(window_user_list, click_config_provider_user_list);
 	user_list_init();
 	switchOffDLProc();
+    */
     }
 
     if (data_logging_tuple) {
@@ -95,11 +107,11 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 
     if (interaction_data_logging_tuple) {
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "entering interaction data logging");
-	if(window_stack_get_top_window() == window_user_list){//only when the current window is user list
+	//if(window_stack_get_top_window() == window_user_list){//only when the current window is user list
 	    myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
 	    window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
 	    switchOnDLProc(REPEATED_DATALOGGING);
-	}
+	//}
 	/*
 	   myLoadWindow(&window_interaction_data_logging, window_interaction_data_logging_load, window_interaction_data_logging_unload);
 	   window_set_click_config_provider(window_interaction_data_logging, click_config_provider_interaction_data_logging);
@@ -129,6 +141,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 	text_layer_set_text(window_interaction_continue.text_layer, compiler_nacc_err_tuple->value->cstring);
 
 	vibes_enqueue_custom_pattern(patError);
+    switchOnDLProc(REPEATED_DATALOGGING);
 	/*
 	   char msg[50]; 
 	//	strcpy(msg, compiler_nacc_err_tuple->value->cstring);
@@ -164,40 +177,27 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     if (connection_error_tuple) {
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "connection_error_tuple value = %d", connection_error_tuple -> value -> uint8);
 	if(connection_error_tuple->value->uint8 == 0){
-	    if(window_stack_get_top_window() == window_user_list){//only when the current window is user list
-		myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
-		window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
-		text_layer_set_text(data_logging_layer, "Connection error, press BACK to retry");
-		vibes_enqueue_custom_pattern(patError);
-	    }
-	    else if(window_stack_get_top_window() == window_data_logging){
-		switchOffDLProc();
-		text_layer_set_text(data_logging_layer, "Connection error, press BACK to retry");
-		vibes_enqueue_custom_pattern(patError);
-	    }
+	    showErrorMessageRemovingDL("Connection error, press BACK to retry");
 	}
 	else if(connection_error_tuple->value->uint8 == 1){
-	    switchOffDLProc();
-	    myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
-	    window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
-	    text_layer_set_text(data_logging_layer, "Receive timeout, press BACK to retry");
-	    vibes_enqueue_custom_pattern(patError);
+        showErrorMessageRemovingDL("Receive timeout, press BACK to retry");
 	}
 	else if(connection_error_tuple->value->uint8 == 2){
-	    switchOffDLProc();
-	    myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
-	    window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
-	    text_layer_set_text(data_logging_layer, "Server may be closed, press BACK to retry");
-	    vibes_enqueue_custom_pattern(patError);
+        showErrorMessageRemovingDL("Server may be closed, press BACK to retry");
 	}
     }
     if(motion_too_short_error_tuple){
-	switchOffDLProc();
-	myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
-	window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
-	text_layer_set_text(data_logging_layer, "Motion too short, do the gesture again");
-	vibes_enqueue_custom_pattern(patError);
-	switchOnDLProc(REPEATED_DATALOGGING);
+        showErrorMessageRemovingDL("Motion too short, do the gesture again");
+	    switchOnDLProc(REPEATED_DATALOGGING);
+    }
+    
+    if(user_related_error_tuple){
+        if(user_related_error_tuple->value->uint8 == 0){
+            showErrorMessageRemovingDL("No user logged in");
+        }
+        else if(user_related_error_tuple->value->uint8 == 1){
+            showErrorMessageRemovingDL("No trained data");
+        }
     }
 }
 
