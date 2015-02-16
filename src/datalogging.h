@@ -11,8 +11,8 @@
 #define TIMER_PERIOD 100 //in ms
 #define TIMER_PERIOD_LONG 1000 //in ms
 
-#define DEVIDER_SHORT 1 //determined based on NUM_SAMPLES and SAMPLING_RATE
-#define DEVIDER_LONG 25//determined based on NUM_SAMPLES and SAMPLING_RATE, for 25HZ sampling rate and 2 NUM_SAMPLES, it's equivalent to 2s
+#define DIVIDER_SHORT 1 //determined based on NUM_SAMPLES and SAMPLING_RATE
+#define DIVIDER_LONG 25 //determined based on NUM_SAMPLES and SAMPLING_RATE, for 25HZ sampling rate and 2 NUM_SAMPLES, it's equivalent to 2s
 
 #define QUEUE_LENGTH 10 //the length of round-robin queue
 #define U_BOUND_GRAVITY_2 (100+10) //upper bound of square of gravity
@@ -33,7 +33,7 @@ extern int initialAcc[3]; //the direction of positive z axis
 
 extern int logSwitch; //the switch of collecting data
 
-extern int frequencyDevider; //used to control the frequency of wrist turn detection
+extern int frequencyDivider; //used to control the frequency of wrist turn detection
 
 extern int counter; //counter of accel samples
 

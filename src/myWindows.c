@@ -28,20 +28,19 @@ char *data_logging_info_restart = "FINISHED\n\nTurn wrist to restart";
 char *data_logging_info_waiting = "FINISHED\n\nWaiting for feedback...";
 char *data_logging_info_collecting = "Collecting data ...";
 
-//pop window if it is on the top of window stack, if not, remove it from window stack
+// pop window if it is on the top of window stack, if not, remove it from window stack
 void myPopWindow(Window* window){
     if(window_stack_get_top_window() != window){
-	if(window_stack_contains_window(window)){
-	    window_stack_remove(window, false);
-	}
+    	if(window_stack_contains_window(window)){
+    	    window_stack_remove(window, false);
+    	}
     }
     else{
-	window_stack_pop(true);
+	    window_stack_pop(true);
     }
-
 }
 
-//create a text layer on window, and set the initial text
+// create a text layer on window, and set the initial text
 void my_create_text_layer(Window* window, TextLayer** tl, char* info){
     Layer *window_layer = window_get_root_layer(window);
 
@@ -56,70 +55,44 @@ void my_create_text_layer(Window* window, TextLayer** tl, char* info){
     layer_add_child(window_layer, text_layer_get_layer(*tl));
 }
 
-//basic operations to load a window, without click handlers registration
-/*
-   void myLoadWindow(Window* window, WindowHandlers whdls){
-   window = window_create();
-   window_set_window_handlers(window, whdls);
-   window_stack_push(window, true );
-   if(window_stack_get_top_window() != window){//if the window is already on the top, do nothing
-   if(window_stack_contains_window(window)){
-   window_stack_remove(window, false);
-   }
-   window = window_create();
-   window_set_window_handlers(window, whdls);
-   window_stack_push(window, true Animated );
-   }
-   }
- */
-
+// basic operations to load a window, without click handlers registration
+// create a window and set load and unload handlers; remove the window which is to be created if it exists in the stack
 void myLoadWindow(Window** window, WindowHandler loadW, WindowHandler unloadW){
-    /*
-     *window = window_create();
-     window_set_window_handlers(*window, (WindowHandlers){
-     .load = loadW,
-     .unload = unloadW
-     });
-     window_stack_push(*window, true);
-     */
     if(window_stack_get_top_window() != *window){//if the window is already on the top, do nothing
-	if(window_stack_contains_window(*window)){
-	    window_stack_remove(*window, false);
-	}
-	*window = window_create();
-	window_set_window_handlers(*window, (WindowHandlers){
-		.load = loadW,
-		.unload = unloadW
-		});
-	window_stack_push(*window, true);
+    	if(window_stack_contains_window(*window)){
+    	    window_stack_remove(*window, false);
+    	}
+    	*window = window_create();
+    	window_set_window_handlers(*window, (WindowHandlers){
+    		.load = loadW,
+    		.unload = unloadW
+    		});
+    	window_stack_push(*window, true);
     }
 }
-//pop all windows on the top of main window. The main window is the first to push, so it must be in the buttom of the stack.
+
+// pop all windows on the top of main window. The main window is the first to push, so it must be in the buttom of the stack.
 void popOtherThanMain(){
     Window *w = window_stack_get_top_window();
     while(w != window_main){
-	window_stack_pop(true);
-	w = window_stack_get_top_window();
+    	window_stack_pop(true);
+    	w = window_stack_get_top_window();
     }
 }
 
-//append a new item with text *data
+// append a new item with text *data
 void user_list_append(char *data) {
     if (user_item_count == MAX_NUM_USER_ITEMS) { 
-	return;
+	    return;
     }
-
     strcpy(user_list_items[user_item_count], data);
     user_item_count++;
-
     menu_layer_reload_data(menu_user_list_layer);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "leaving user list append");
 }
 
-//send KEY_FETCH_USER_NAME to request user names and the phone send them to watch
+// send KEY_FETCH_USER_NAME to request user names and the phone send them to watch
 void user_list_init(void) {
     user_item_count = 0;
-
     sendUint8(KEY_FETCH_USER_NAME, 0);
 }
 
@@ -127,14 +100,15 @@ void sendUint8(int key, uint8_t value){
     DictionaryIterator *iter;
 
     if (app_message_outbox_begin(&iter) != APP_MSG_OK) {
-	return;
+	    return;
     }
 
     if (dict_write_uint8(iter, key, value) != DICT_OK) {
-	return;
+	    return;
     }
     app_message_outbox_send();
 }
+
 //--------------- callbacks of menu layer ----------------------
 int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     return 44;
@@ -146,13 +120,11 @@ int16_t get_cell_height_userlist_callback(struct MenuLayer *menu_layer, MenuInde
 
 void draw_row_callback(GContext* ctx, Layer *cell_layer, MenuIndex *cell_index, void *data) {
     const int index = cell_index->row;
-
     menu_cell_basic_draw(ctx, cell_layer, main_menu[index], NULL, NULL);
 }
 
 void draw_row_userlist_callback(GContext* ctx, Layer *cell_layer, MenuIndex *cell_index, void *data) {
     const int index = cell_index->row;
-
     menu_cell_basic_draw(ctx, cell_layer, user_list_items[index], NULL, NULL);
 }
 
@@ -164,16 +136,17 @@ uint16_t get_num_rows_userlist_callback(struct MenuLayer *menu_layer, uint16_t s
     return user_item_count;
 }
 
+// the callback function of the SELECT button in main menu window
 void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
     const int index = cell_index->row;
 
     switch(index){
-        case 0: 
+        case 0: // the Control option is selected
         //load data logging menu        
         myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
         window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
         switchOnDLProc(REPEATED_DATALOGGING);
-        sendUint8(KEY_INTERACTION_MENU, 0);
+        sendUint8(KEY_INTERACTION_MENU, 0); // send this key to synchroinze the UI in phone
         
         /*
         //the user list item
@@ -185,15 +158,6 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
         */
 	    break;
 	case 1: //the training item
-	    APP_LOG(APP_LOG_LEVEL_DEBUG, "entering case 0");
-	    /*
-	       window_training = window_create();
-	       window_set_window_handlers(window_training, (WindowHandlers){
-	       .load = window_training_load,
-	       .unload = window_training_unload
-	       });
-	       window_stack_push(window_training, true);
-	     */
 	    myLoadWindow(&window_training, window_training_load, window_training_unload);
 	    window_set_click_config_provider(window_training, click_config_provider_training);
 	    sendUint8(KEY_TRAINING_MENU, 0);
@@ -210,18 +174,20 @@ void select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
 	    accel_data_service_unsubscribe();
 	    }
 	     */
-	    APP_LOG(APP_LOG_LEVEL_DEBUG, "leaving case 0");
 
 	    break;
-	
-
-	case 2: //the configuration item
+	case 2: 
+        //load data logging menu
+    	myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
+    	window_set_click_config_provider(window_data_logging, click_config_provider_data_logging); // back button to return to main menu
+        switchOnDLProc(true);//switch on datalogging process in repeated manner
+        sendUint8(KEY_TRAINING_TEST_MENU, 0);
+        /*
+        //the configuration item
 	    myLoadWindow(&window_configuration, window_configuration_load, window_configuration_unload);
 	    sendUint8(KEY_CONFIGURATION_MENU, 0);
+        */
 	    break;
-
-
-
     }
 
     menu_layer_reload_data(menu_layer);
@@ -234,6 +200,7 @@ void back_click_handler_to_main_menu(Window* w){
 
     popOtherThanMain();
     myLoadWindow(&window_main, window_main_load, window_main_unload);
+    switchOffDLProc();
 }
 
 //--------------- click handlers for user list window ----------------------
@@ -255,7 +222,9 @@ void select_click_handler_userlist(ClickRecognizerRef recognizer, void *context)
     myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
     window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
     /*
-    myLoadWindow(&window_interaction_data_logging, window_interaction_data_logging_load, window_interaction_data_logging_unload);
+    myLoadWindow(&window_interaction_data_logging, window_interaction_data_logging_load, 
+
+    window_interaction_data_logging_unload);
     window_set_click_config_provider(window_interaction_data_logging, click_config_provider_interaction_data_logging);
     */
     //myLoadWindow(&(window_interaction_continue.window), window_load_continue, window_unload_continue);
@@ -316,7 +285,6 @@ void window_connection_detection_unload(Window *window) {
 
 //--------------- main window handler ----------------------
 void window_main_load(Window* window) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "main window is loading");
     Layer *window_layer = window_get_root_layer(window);
     GRect window_frame = layer_get_frame(window_layer);
     menu_main_layer = menu_layer_create(window_frame);
@@ -381,7 +349,7 @@ void window_user_list_unload(Window *window) {
 
 void myWindowDestroy(Window* w){
     if(w != NULL){
-	window_destroy(w);
+	    window_destroy(w);
     }
 }
 

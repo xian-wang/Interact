@@ -35,7 +35,7 @@ const GRect NUMBER_POSITIONS[3] =  {
 //--------------- vibration patterns ----------------------
  // Vibe pattern: ON for 200ms, OFF for 100ms, ON for 200ms:
 //const uint32_t const segmentsCorrect[] = { 200, 100, 200 };
-const uint32_t const segmentsCorrect[] = { 100 };
+const uint32_t segmentsCorrect[] = { 100 };
 VibePattern patCorrect = {
     .durations = segmentsCorrect,
     .num_segments = ARRAY_LENGTH(segmentsCorrect),
@@ -43,21 +43,21 @@ VibePattern patCorrect = {
 //vibes_enqueue_custom_pattern(pat);
 
  // Vibe pattern: ON for 200ms, OFF for 100ms, ON for 100ms:
-const uint32_t const segmentsError[] = { 200, 100, 100 };
+const uint32_t segmentsError[] = { 200, 100, 100 };
 VibePattern patError = {
     .durations = segmentsError,
     .num_segments = ARRAY_LENGTH(segmentsError),
 };
 
  // Vibe pattern: ON for 400ms:
-const uint32_t const segmentsAccepted[] = { 400 };
+const uint32_t segmentsAccepted[] = { 400 };
 VibePattern patAccepted = {
     .durations = segmentsAccepted,
     .num_segments = ARRAY_LENGTH(segmentsAccepted),
 };
 
  // Vibe pattern: ON for 100ms, OFF for 100ms, ON for 200ms:
-const uint32_t const segmentsFeedback[] = { 100, 100, 200 };
+const uint32_t segmentsFeedback[] = { 100, 100, 200 };
 VibePattern patFeedback = {
     .durations = segmentsFeedback,
     .num_segments = ARRAY_LENGTH(segmentsFeedback),
@@ -70,7 +70,7 @@ WindowActionBar window_interaction_feedback;
 //--------------- click handlers for continue window ----------------------
 void up_click_handler_continue(ClickRecognizerRef recognizer, void *context) {
     //rollback
-    sendUint8(KEY_COMPILER_MSG, ROLLBACK);
+    sendUint8(KEY_COMPILER_MSG, ROLLBACK); // send rollback request to server via phone
     myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
     window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
     switchOnDLProc(REPEATED_DATALOGGING);
@@ -90,7 +90,7 @@ void select_click_handler_continue(ClickRecognizerRef recognizer, void *context)
 
 void down_click_handler_continue(ClickRecognizerRef recognizer, void *context) {
     //cancel all gestures
-    sendUint8(KEY_COMPILER_MSG, CANCEL_RESTART);
+    sendUint8(KEY_COMPILER_MSG, CANCEL_RESTART); // send the "cancel all"" request to server via phone
     myLoadWindow(&window_data_logging, window_data_logging_load, window_data_logging_unload);
     window_set_click_config_provider(window_data_logging, click_config_provider_interaction_data_logging);
     switchOnDLProc(REPEATED_DATALOGGING);
@@ -99,7 +99,7 @@ void down_click_handler_continue(ClickRecognizerRef recognizer, void *context) {
 //--------------- click handlers for confirm window ----------------------
 void up_click_handler_confirm(ClickRecognizerRef recognizer, void *context) {
     //confirm
-    sendUint8(KEY_COMPILER_MSG, CONFIRM);
+    sendUint8(KEY_COMPILER_MSG, CONFIRM); // send the confirmation
     myLoadWindow(&(window_interaction_feedback.window), window_load_feedback, window_unload_feedback);
     window_set_click_config_provider(window_interaction_feedback.window, config_provider_feedback);
 }
@@ -166,11 +166,11 @@ void config_provider_feedback(void *ctx) {
 //initialize text layers and bitmap resources of action bar
 void init_action_elements(WindowActionBar *wab, int numElements, int* actionOptionsIdx, int* gRectIdx, int* resourceIdx) {
     for (int i = 0; i < numElements; i++) {
-	wab->actionBarElement[i].text_layer = text_layer_create(NUMBER_POSITIONS[gRectIdx[i]]);
-	layer_add_child(window_get_root_layer(wab->window), text_layer_get_layer(wab->actionBarElement[i].text_layer));
-	wab->actionBarElement[i].bitmap = gbitmap_create_with_resource(RESOURCE_IDS[resourceIdx[i]]);
-	//	text_layer_set_text(wab->actionBarElement[i].text_layer, *strActionOptions + actionOptionsIdx[i]);
-	text_layer_set_font(wab->actionBarElement[i].text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+    	wab->actionBarElement[i].text_layer = text_layer_create(NUMBER_POSITIONS[gRectIdx[i]]);
+    	layer_add_child(window_get_root_layer(wab->window), text_layer_get_layer(wab->actionBarElement[i].text_layer));
+    	wab->actionBarElement[i].bitmap = gbitmap_create_with_resource(RESOURCE_IDS[resourceIdx[i]]);
+    	//	text_layer_set_text(wab->actionBarElement[i].text_layer, *strActionOptions + actionOptionsIdx[i]);
+    	text_layer_set_font(wab->actionBarElement[i].text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
     }
 }
 
@@ -180,15 +180,15 @@ void action_bar_init(WindowActionBar *wab, ClickConfigProvider config_provider, 
     action_bar_layer_add_to_window(wab->action_bar_layer, wab->window);
     action_bar_layer_set_click_config_provider(wab->action_bar_layer, config_provider);
     for (int i = 0; i < numElements; i++) {
-	action_bar_layer_set_icon(wab->action_bar_layer, buttonId[i], wab->actionBarElement[i].bitmap);
+	    action_bar_layer_set_icon(wab->action_bar_layer, buttonId[i], wab->actionBarElement[i].bitmap);
     }
 }
 
 //de-initialize action bar elements including text layer and bitmap
 void deinit_action_elements(WindowActionBar *wab, int numElements) {
     for (int i = 0; i < numElements; i++) {
-	text_layer_destroy(wab->actionBarElement[i].text_layer);
-	gbitmap_destroy(wab->actionBarElement[i].bitmap);
+    	text_layer_destroy(wab->actionBarElement[i].text_layer);
+    	gbitmap_destroy(wab->actionBarElement[i].bitmap);
     }
 }
 

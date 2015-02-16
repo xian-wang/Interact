@@ -82,7 +82,6 @@ void action_bar_text_layer_setting(TextLayer** textLayer, Window* window, char* 
 
 //--------------- load and unload methods of window of continue ----------------------
 void window_load_continue(Window *window);
-
 void window_unload_continue(Window *window);
 
 //--------------- load and unload methods of window of confirm ----------------------
