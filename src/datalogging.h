@@ -18,8 +18,17 @@
 #define U_BOUND_GRAVITY_2 (100+10) //upper bound of square of gravity
 #define L_BOUND_GRAVITY_2 (100-10) //lower bound of square of gravity
 #define BOUND_S_DEVIATION 100 //threshold of standard deviation of square of gravity, when the watch is static
+
+// thresholds for enabling data log
+#define U_BOUND_GRAVITY_2_START (121) //11*11, upper bound of square of gravity
+#define L_BOUND_GRAVITY_2_START (81) // 9*9, lower bound of square of gravity
+#define BOUND_S_DEVIATION_START 100 //threshold of standard deviation of square of gravity, when the watch is static    
+
 #define MINI_SAMPLES 25 //the minimum samples for one gesture
 #define REPEATED_DATALOGGING false //parameter of myRegisterAcc to make the datalogging only runs once
+    
+extern const uint32_t const segmentsExShort[];
+extern VibePattern patExShort;
 
 extern char text[TEXT_LENGTH];
 

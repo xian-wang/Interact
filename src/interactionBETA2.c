@@ -13,30 +13,30 @@ void showErrorMessageRemovingDL(char* info){ // disable data logging and load da
     
 void compilerMsgProc(int msg){
     switch(msg){
-	case ACCEPTED: // the gesture chain is accepted, load the confirm window
-	    switchOffDLProc();
-	    myLoadWindow(&(window_interaction_confirm.window), window_load_confirm, window_unload_confirm);
-	    text_layer_set_text(window_interaction_confirm.text_layer, "ACCEPTED");
-	    vibes_enqueue_custom_pattern(patAccepted);
-	    break;
-	case NON_ACC_NON_COMPERR:
-	    break;
-	case NON_ACC_COMPERR:
-	    break;
-	case GEST_NAME:
-	    break;
-	case CONTINUE:
-	    break;
-	case ROLLBACK:
-	    break;    
-	case CANCEL_RESTART:
-	    break;
-	case CONFIRM:
-	    break;
-	case NEGATE:
-	    break;
-	case RECV_FEEDBACK:
-	    break;
+    	case ACCEPTED: // the gesture chain is accepted, load the confirm window
+    	    switchOffDLProc();
+    	    myLoadWindow(&(window_interaction_confirm.window), window_load_confirm, window_unload_confirm);
+    	    text_layer_set_text(window_interaction_confirm.text_layer, "ACCEPTED");
+    	    vibes_enqueue_custom_pattern(patAccepted);
+    	    break;
+    	case NON_ACC_NON_COMPERR:
+    	    break;
+    	case NON_ACC_COMPERR:
+    	    break;
+    	case GEST_NAME:
+    	    break;
+    	case CONTINUE:
+    	    break;
+    	case ROLLBACK:
+    	    break;    
+    	case CANCEL_RESTART:
+    	    break;
+    	case CONFIRM:
+    	    break;
+    	case NEGATE:
+    	    break;
+    	case RECV_FEEDBACK:
+    	    break;
     }
 
 }
