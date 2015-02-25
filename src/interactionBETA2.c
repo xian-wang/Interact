@@ -142,12 +142,24 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
     if (command_ack_tuple) { // the server has accepted the confirmation from Pebble and sent back ack
         switchOffDLProc();
     	myLoadWindow(&(window_interaction_feedback.window), window_load_feedback, window_unload_feedback);
-    	int value = command_ack_tuple->value->uint8;
-    	switch(value){
+    	char* value = command_ack_tuple->value->cstring;
+        int type = *value - '0';
+    	switch(type){
+            text_layer_set_text_alignment(window_interaction_feedback.text_layer, GTextAlignmentCenter);
     	    case 1:
-    		text_layer_set_text(window_interaction_feedback.text_layer, "COMMAND CONFIRMED");
+            if(strlen(value) == 1){
+                text_layer_set_font(window_interaction_feedback.text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+                text_layer_set_text(window_interaction_feedback.text_layer, "COMMAND CONFIRMED");
+            }
+            else{
+                text_layer_set_text_alignment(window_interaction_feedback.text_layer, GTextAlignmentLeft);
+                text_layer_set_font(window_interaction_feedback.text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+                text_layer_set_text(window_interaction_feedback.text_layer, value + 1);
+            }
+    		
     		break;
     	    case 2: 
+            text_layer_set_font(window_interaction_feedback.text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
     		text_layer_set_text(window_interaction_feedback.text_layer, "COMMAND CANCELED");
     		break;
     	}
